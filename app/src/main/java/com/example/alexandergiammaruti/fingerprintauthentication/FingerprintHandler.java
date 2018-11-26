@@ -1,24 +1,32 @@
 package com.example.alexandergiammaruti.fingerprintauthentication;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.fingerprint.FingerprintManager;
+import android.os.SystemClock;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 import android.os.CancellationSignal;
 
 
 import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 public class FingerprintHandler extends FingerprintManager.AuthenticationCallback {
 
     // You should use the CancellationSignal method whenever your app can no longer process user input, for example when your app goes
     // into the background. If you don’t use this method, then other apps will be unable to access the touch sensor, including the lockscreen!//
 
+
     private CancellationSignal cancellationSignal;
     private Context context;
     private MyCallback myCallback;
+
+
     public long clockInTime, clockOutTime;
 
     public FingerprintHandler(Context mContext, MyCallback myCallback) {
@@ -67,11 +75,23 @@ public class FingerprintHandler extends FingerprintManager.AuthenticationCallbac
     //onAuthenticationSucceeded is called when a fingerprint has been successfully matched to one of the fingerprints stored on the user’s device//
     public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
         clockInTime = System.currentTimeMillis();
+        java.util.Date d = new java.util.Date();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a");
         String currentDateTImeString = DateFormat.getDateInstance().format(new java.util.Date());
-        Toast.makeText(context, "Success!\nYou clocked in at: " + currentDateTImeString, Toast.LENGTH_LONG).show();
-        LocationPolling locationPolling = new LocationPolling(this.context);
-        locationPolling.execute();
-        myCallback.onSuccess(1, locationPolling);
+        currentDateTImeString = simpleDateFormat.format(d);
+        ((Globals) context.getApplicationContext()).setClockInTime(clockInTime);
+        Toast.makeText(context, "Success! You clocked in at: " + currentDateTImeString, Toast.LENGTH_LONG).show();
+
+
+
+
+
+
+
+
+
+        myCallback.onSuccess(1);
+
     }
 
 
